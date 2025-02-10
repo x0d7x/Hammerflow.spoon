@@ -21,6 +21,10 @@ local keyMap = {
   [singleKey('b', 'browser')] = function() hs.application.launchOrFocus("Zen Browser") end,
   [singleKey('t', 'terminal')] = function() hs.application.launchOrFocus("Ghostty") end,
   [singleKey('v', 'vscode')] = function() hs.application.launchOrFocus("Visual Studio Code") end,
+  -- open apps but not worth top layer
+  [singleKey('o', 'open+')] = {
+    [singleKey('t', 'todoist')] = function() hs.application.launchOrFocus("Todoist") end,
+  },
   -- webpages
   [singleKey('d', 'domain+')] = {
     [singleKey('g', 'github')] = function() hs.urlevent.openURL("https://github.com") end,
@@ -31,19 +35,20 @@ local keyMap = {
   -- raycast
   [singleKey('r', 'raycast+')] = {
     [singleKey('e', 'emoji')] = function()
-      hs.urlevent.openURL(
-        "raycast://extensions/raycast/emoji-symbols/search-emoji-symbols")
+      hs.execute(
+        "open raycast://extensions/raycast/emoji-symbols/search-emoji-symbols")
     end,
     [singleKey('a', 'appearance')] = function()
-      hs.urlevent.openURL(
-        "raycast://extensions/raycast/system/toggle-system-appearance")
+      hs.execute(
+        "open raycast://extensions/raycast/system/toggle-system-appearance")
     end,
     [singleKey('c', 'confetti')] = function() hs.urlevent.openURL("raycast://extensions/raycast/raycast/confetti") end
   },
   -- hammerspoon
   [singleKey('h', 'hammerspoon+')] = {
     -- [singleKey('r', 'reload')] = function() hs.reload() hs.console.clearConsole() end,
-    [singleKey('c', 'config')] = function() hs.execute("/usr/local/bin/code ~/.hammerspoon") end
+    [singleKey('c', 'config')] = function() hs.execute("/usr/local/bin/code ~/.hammerspoon") end,
+    [singleKey('d', 'docs')] = function() hs.execute("open https://www.hammerspoon.org") end
   }
 }
 
