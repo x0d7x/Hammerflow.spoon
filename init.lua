@@ -43,18 +43,18 @@ local keyMap = {
     [singleKey('r', 'record')] = function() move(hs.geometry.rect(.408203125, .01, .33984375, .98)) end,
     -- i for center just cause it's easier to type
     [singleKey('i', 'center')] = function() move(hs.geometry.rect(.275, 0, .45, 1)) end,
-    [singleKey('f', 'full')] = function() hs.execute("open raycast://extensions/raycast/window-management/maximize") end,
+    [singleKey('f', 'full')] = function() move(rect(0, 0, 1, 1)) end,
     [singleKey('j', 'left half')] = function() move(hs.layout.left50) end,
     [singleKey('k', 'right half')] = function() move(hs.layout.right50) end,
-    [singleKey('h', 'left small')] = function() move(rect(0,0,.2745,1)) end,
-    [singleKey('l', 'right small')] = function() move(rect(.7255,0,.2745,1)) end,
+    [singleKey('h', 'left small')] = function() move(rect(0, 0, .2745, 1)) end,
+    [singleKey('l', 'right small')] = function() move(rect(.7255, 0, .2745, 1)) end,
   },
 
   -- raycast
   [singleKey('r', 'raycast+')] = {
     [singleKey('e', 'emoji')] = function() open("raycast://extensions/raycast/emoji-symbols/search-emoji-symbols") end,
     [singleKey('a', 'appearance')] = function() open("raycast://extensions/raycast/system/toggle-system-appearance") end,
-    [singleKey('c', 'confetti')] = function() hs.urlevent.openURL("raycast://extensions/raycast/raycast/confetti") end
+    [singleKey('c', 'confetti')] = function() open("raycast://extensions/raycast/raycast/confetti") end
   },
 
   -- hammerspoon
