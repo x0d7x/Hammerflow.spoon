@@ -2,9 +2,12 @@ hs.loadSpoon("RecursiveBinder")
 hs.loadSpoon("ReloadConfiguration")
 spoon.ReloadConfiguration:start()
 
--- Home vs Work laptop
-local user = os.getenv("USER")
-local config = hs.json.read(user == "samlewis" and "home.json" or "work.json")
+local leader_key = "f18"
+
+-- Allows different configs for different computers.
+-- Reads the first config found and falls back to sample.json
+-- so shortcuts work right after git clone for new users.
+local config = hs.json.read("home.json") or hs.json.read("work.json") or hs.json.read("sample.json")
 local apps = config.apps
 local links = config.links
 local emails = config.emails
