@@ -23,21 +23,21 @@ local raycast = function(link) hs.execute(string.format("open -g %s", link)) end
 
 local function jsonToKeyMapForLinks(linksJson)
   local keyMap = {}
-  for _, v in pairs(linksJson) do 
-    local key = singleKey(v.trigger, v.label)
-    if v.url then
-      keyMap[key] = function() open(v.url) end
+  for _, link in ipairs(linksJson) do 
+    local key = singleKey(link.trigger, link.label)
+    if link.url then
+      keyMap[key] = function() open(link.url) end
     else
-      local nested = {}
-      for _, linkItem in ipairs(v.links) do 
-        local nestedKey = singleKey(linkItem.trigger, linkItem.label)
-        if linkItem.url then
-          nested[nestedKey] = function() open(linkItem.url) end
+      local nestMap = {}
+      for _, nestLink in ipairs(link.links) do 
+        local nestKey = singleKey(nestLink.trigger, nestLink.label)
+        if nestLink.url then
+          nestMap[nestKey] = function() open(nestLink.url) end
         else  
-          nested[nestedKey] = jsonToKeyMapForLinks(linkItem.links)
+          nestMap[nestKey] = jsonToKeyMapForLinks(nestLink.links)
         end
       end
-      keyMap[key] = nested
+      keyMap[key] = nestMap
     end
   end
   return keyMap
