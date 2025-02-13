@@ -22,6 +22,11 @@
             "trigger": "s",
             "links": [
                 {
+                    "label": "reddit",
+                    "trigger": "r",
+                    "url": "https://old.reddit.com"
+                },
+                {
                     "label": "github",
                     "trigger": "g",
                     "url": "https://github.com"
