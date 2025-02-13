@@ -7,16 +7,25 @@ local user = os.getenv("USER")
 local config = hs.json.read(user == "samlewis" and "home.json" or "work.json")
 local apps = config.apps
 local links = config.links
-
+local emails = config.emails
 
 -- aliases
-local launch = hs.application.launchOrFocus
 local singleKey = spoon.RecursiveBinder.singleKey
 local rect = hs.geometry.rect
 local move = function(loc) hs.window.focusedWindow():move(loc, nil, nil, 0) end
 local open = function(link) hs.execute(string.format("open %s", link)) end
--- raycast needs -g to keep current app as "active" for pasting from emoji picker
+-- raycast needs -g to keep current app as "active" for 
+-- pasting from emoji picker and window management
 local raycast = function(link) hs.execute(string.format("open -g %s", link)) end
+local launch = function(s)
+  -- allows apps to be an actual app name or a URL
+  -- such as https://gmail.com for email
+  if s:find("^https://") then 
+    open(s)
+  else 
+    hs.application.launchOrFocus(s)
+  end
+end
 
 -- settings
 -- spoon.RecursiveBinder.showBindHelper = false
