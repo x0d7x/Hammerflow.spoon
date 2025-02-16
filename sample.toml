@@ -62,13 +62,20 @@ h = "window:left-half" # use presets listed in the README
 c = "window:center-half" # use presets listed in the README
 l = ["window:.4,.3,.2,.4","small center"] # or use 4 percentages for x,y,width,height for custom placement - more details in README
 
+# or use raycast for window management if you prefer
+# [w]
+# label = "[window]"
+# h = ["raycast://extensions/raycast/window-management/left-half", "left half"]
+# l = ["raycast://extensions/raycast/window-management/right-half", "right half"]
+# c = ["raycast://extensions/raycast/window-management/center-half", "center half"]
+
 # this group is handy to copy over
-# to your main config for easy tweaking
+# to your main config for easy experimenting
 [h]
 label = "[hammerspoon]"
 d = ["https://www.hammerspoon.org/docs/index.html", "docs"]
 c = "cmd:code ~/.hammerspoon"
-r = "reload"
+r = "reload" # reserved for reloading your hammerspoon config (helpful when auto_reload is false)
 
 # glhf :) share your cool ideas with me on
 # twitter @saml_dev - <leader> l m t
