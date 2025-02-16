@@ -64,6 +64,9 @@ end
 local launch = function(app)
   return function() hs.application.launchOrFocus(app) end
 end
+local hs_run = function(lua)
+  return function() load(lua)() end
+end
 
 -- window management presets
 local windowLocations = {
@@ -96,6 +99,8 @@ local function getAction(s)
     return function() hs.reload() end
   elseif s:find("^raycast://") then
     return raycast(s)
+  elseif s:sub(1, 3) == "hs:" then
+    return hs_run(s:sub(4))
   elseif s:sub(1, 4) == "cmd:" then
     return exe(s:sub(5))
   elseif s:sub(1, 5) == "code:" then

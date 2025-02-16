@@ -81,3 +81,9 @@ r = "reload" # reserved for reloading your hammerspoon config (helpful when auto
 # twitter @saml_dev - <leader> l m t
 # bluesky @saml.dev - <leader> l m b
 # github saml-dev   - <leader> l m g
+
+# for advanced hammerspoon users, you can use
+# the hs: prefix as an escape hatch to run any
+# hammerspoon command you want.
+[z]
+z = "hs:hs.alert(\"Hello, world!\")"
