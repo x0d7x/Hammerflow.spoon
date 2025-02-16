@@ -188,6 +188,22 @@ local function createKeyName(key)
    end
 end
 
+-- Function to compare two letters
+-- It sorts according to the ASCII code, and for letters, it will be alphabetical
+-- However, for capital letters (65-90), I'm adding 32.5 (this came from 97 - 65 + 0.5, where 97 is a and 65 is A) to the ASCII code before comparing
+-- This way, each capital letter comes after the corresponding simple letter but before letters that come after it in the alphabetical order
+local function compareLetters(a, b)
+   local asciiA = string.byte(a)
+   local asciiB = string.byte(b)
+   if asciiA >= 65 and asciiA <= 90 then
+       asciiA = asciiA + 32.5
+   end
+   if asciiB >= 65 and asciiB <= 90 then
+       asciiB = asciiB + 32.5
+   end
+   return asciiA < asciiB
+end
+
 -- show helper of available keys of current layer
 local function showHelper(keyFuncNameTable)
    -- keyFuncNameTable is a table that key is key name and value is description
@@ -195,7 +211,16 @@ local function showHelper(keyFuncNameTable)
    local separator = '' -- first loop doesn't need to add a separator, because it is in the very front. 
    local lastLine = ''
    local count = 0
+
+   local sortedKeyFuncNameTable = {}
    for keyName, funcName in pairs(keyFuncNameTable) do
+       table.insert(sortedKeyFuncNameTable, {keyName = keyName, funcName = funcName})
+   end
+   table.sort(sortedKeyFuncNameTable, function(a, b) return compareLetters(a.keyName, b.keyName) end)
+
+   for _, value in ipairs(sortedKeyFuncNameTable) do
+      local keyName = value.keyName
+      local funcName = value.funcName
       count = count + 1
       local newEntry = keyName..' → '..funcName
       -- make sure each entry is of the same length
