@@ -1,106 +1,130 @@
 hs.loadSpoon("RecursiveBinder")
 hs.loadSpoon("ReloadConfiguration")
-spoon.ReloadConfiguration:start()
+local toml = require("./tinytoml")
 
-local leader_key = "f18"
 
 -- Allows different configs for different computers.
--- Reads the first config found and falls back to sample.json
+-- Reads the first config found and falls back to sample.toml
 -- so shortcuts work right after git clone for new users.
-local config = hs.json.read("home.json") or hs.json.read("work.json") or hs.json.read("sample.json")
-local apps = config.apps
-local links = config.links
-local emails = config.emails
+local configs = { "home.toml", "work.toml", "sample.toml" }
+
+local configFile = nil
+for _, config in ipairs(configs) do
+  if pcall(function() toml.parse(config) end) then
+    configFile = toml.parse(config)
+    break
+  end
+end
+if not configFile then
+  hs.alert("No toml config found! Searched for: " .. table.concat(configs, ', '))
+  spoon.ReloadConfiguration:start()
+  return
+end
+if not configFile.leader_key then
+  hs.alert("Missing leader_key in toml, defaulting to f18")
+end
+local leader_key = configFile.leader_key or "f18"
+if configFile.auto_reload then
+  spoon.ReloadConfiguration:start()
+end
+if configFile.toast_on_reload then
+  hs.alert('Reloaded config')
+end
+-- clear settings from table so we don't have to account
+-- for them in the recursive processing function
+configFile.leader_key = nil
+configFile.auto_reload = nil
+configFile.toast_on_reload = nil
 
 -- aliases
 local singleKey = spoon.RecursiveBinder.singleKey
 local rect = hs.geometry.rect
-local move = function(loc) hs.window.focusedWindow():move(loc, nil, nil, 0) end
-local open = function(link) hs.execute(string.format("open %s", link)) end
--- raycast needs -g to keep current app as "active" for 
--- pasting from emoji picker and window management
-local raycast = function(link) hs.execute(string.format("open -g %s", link)) end
-local launch = function(s)
-  -- allows apps to be an actual app name or a URL
-  -- such as https://gmail.com for email
-  if s:find("^https://") then 
-    open(s)
-  else 
-    hs.application.launchOrFocus(s)
+local move = function(loc)
+  return function() hs.window.focusedWindow():move(loc, nil, nil, 0) end
+end
+local open = function(link, flag)
+  return function() hs.execute(string.format("open %s", link)) end
+end
+local raycast = function(link)
+  -- raycast needs -g to keep current app as "active" for
+  -- pasting from emoji picker and window management
+  return function() hs.execute(string.format("open -g %s", link)) end
+end
+local text = function(s)
+  return function() hs.eventtap.keyStrokes(s) end
+end
+local exe = function(cmd)
+  return function() hs.execute(cmd) end
+end
+local launch = function(app)
+  return function() hs.application.launchOrFocus(app) end
+end
+
+-- window management presets
+local windowLocations = {
+  ["left-half"] = move(hs.layout.left50),
+  ["center-half"] = move(rect(.25, 0, .5, 1)),
+  ["right-half"] = move(hs.layout.right50),
+  ["left-quarter"] = move(hs.layout.left25),
+  ["right-quarter"] = move(hs.layout.right25),
+  ["left-third"] = move(rect(0, 0, 1 / 3, 1)),
+  ["center-third"] = move(rect(1 / 3, 0, 1 / 3, 1)),
+  ["right-third"] = move(rect(2 / 3, 0, 1 / 3, 1)),
+  ["top-left"] = move(rect(0, 0, .5, .5)),
+  ["top-right"] = move(rect(.5, 0, .5, .5)),
+  ["bottom-left"] = move(rect(0, .5, .5, .5)),
+  ["bottom-right"] = move(rect(.5, .5, .5, .5)),
+  ["maximized"] = move(hs.layout.maximized),
+  ["fullscreen"] = function() hs.window.focusedWindow():toggleFullScreen() end
+}
+
+local function getAction(s)
+  -- todo: change to getActionAndLabel and return better default labels
+  -- e.g. for macro: we should strip prefix for default label
+  if s:find("^http[s]?://") then
+    return open(s)
+  elseif s == "reload" then
+    return function() hs.reload() end
+  elseif s:find("^raycast://") then
+    return raycast(s)
+  elseif s:sub(1, 4) == "cmd:" then
+    return exe(s:sub(5))
+  elseif s:sub(1, 5) == "text:" then
+    return text(s:sub(6))
+  elseif s:sub(1, 7) == "window:" then
+    local loc = s:sub(8)
+    if windowLocations[loc] then
+      return windowLocations[loc]
+    else
+      -- e.g. window:0,0,.5,1 for left half of screen
+      local x, y, w, h = loc:match("^([%.%d]+),%s*([%.%d]+),%s*([%.%d]+),%s*([%.%d]+)$")
+      if not x then
+        hs.alert('Invalid window location: "' .. loc .. '"', nil, nil, 5)
+        return
+      end
+      return move(rect(tonumber(x), tonumber(y), tonumber(w), tonumber(h)))
+    end
+    return
+  else
+    return launch(s)
   end
 end
 
--- settings
--- spoon.RecursiveBinder.showBindHelper = false
-
-local function jsonToKeyMapForLinks(linksJson)
+local function parseKeyMap(config)
   local keyMap = {}
-  for _, link in ipairs(linksJson) do 
-    local key = singleKey(link.trigger, link.label)
-    if link.url then
-      keyMap[key] = function() open(link.url) end
+  for k, v in pairs(config) do
+    if k == "label" then
+      -- continue
+    elseif type(v) == "string" then
+      keyMap[singleKey(k, v)] = getAction(v)
+    elseif type(v) == "table" and v[1] then
+      keyMap[singleKey(k, v[2])] = getAction(v[1])
     else
-      local nestMap = {}
-      for _, nestLink in ipairs(link.links) do 
-        local nestKey = singleKey(nestLink.trigger, nestLink.label)
-        if nestLink.url then
-          nestMap[nestKey] = function() open(nestLink.url) end
-        else  
-          nestMap[nestKey] = jsonToKeyMapForLinks(nestLink.links)
-        end
-      end
-      keyMap[key] = nestMap
+      keyMap[singleKey(k, v.label or k)] = parseKeyMap(v)
     end
   end
   return keyMap
 end
 
-
-
--- leader key
-local keyMap = {
-  -- top level apps, used a lot
-  [singleKey('b', 'browser')] = function() launch(apps.browser) end,
-  [singleKey('t', 'terminal')] = function() launch(apps.terminal) end,
-  [singleKey('v', 'vscode')] = function() launch(apps.ide) end,
-  
-  -- open apps but not worth top layer
-  [singleKey('a', '[apps]')] = {
-    [singleKey('c', 'calendar')] = function() launch(apps.calendar) end,
-    [singleKey('m', 'messages')] = function() launch(apps.messages) end,
-    [singleKey('e', 'email')] = function() launch(apps.email) end,
-    [singleKey('t', 'tasks')] = function() launch(apps.tasks) end,
-  },
-  
-  -- links generated from json config
-  [singleKey('l', '[links]')] = jsonToKeyMapForLinks(links),
-
-  -- window management
-  [singleKey('w', '[window]')] = {
-    [singleKey('r', 'record')] = function() move(hs.geometry.rect(.408203125, .01, .33984375, .98)) end,
-    -- i and u for center just cause it's easier to type
-    [singleKey('i', 'center')] = function() move(hs.geometry.rect(.275, 0, .45, 1)) end,
-    [singleKey('u', 'bigcenter')] = function() move(hs.geometry.rect(.2, 0, .6, 1)) end,
-    [singleKey('f', 'full')] = function() move(rect(0, 0, 1, 1)) end,
-    [singleKey('j', 'left half')] = function() move(hs.layout.left50) end,
-    [singleKey('k', 'right half')] = function() move(hs.layout.right50) end,
-    [singleKey('h', 'left small')] = function() move(rect(0, 0, .2745, 1)) end,
-    [singleKey('l', 'right small')] = function() move(rect(.7255, 0, .2745, 1)) end,
-  },
-
-  -- raycast
-  [singleKey('r', '[raycast]')] = {
-    [singleKey('e', 'emoji')] = function() raycast("raycast://extensions/raycast/emoji-symbols/search-emoji-symbols") end,
-    [singleKey('a', 'appearance')] = function() raycast("raycast://extensions/raycast/system/toggle-system-appearance") end,
-    [singleKey('c', 'confetti')] = function() raycast("raycast://extensions/raycast/raycast/confetti") end
-  },
-
-  -- hammerspoon
-  [singleKey('h', '[hammerspoon]')] = {
-    -- [singleKey('r', 'reload')] = function() hs.reload() hs.console.clearConsole() end,
-    [singleKey('c', 'config')] = function() hs.execute("/usr/local/bin/code ~/.hammerspoon") end,
-    [singleKey('d', 'docs')] = function() open("https://www.hammerspoon.org/docs/index.html") end
-  }
-}
--- remap right command to f18 via karabiner elements
-hs.hotkey.bind('', 'f18', spoon.RecursiveBinder.recursiveBind(keyMap))
+local keys = parseKeyMap(configFile)
+hs.hotkey.bind('', leader_key, spoon.RecursiveBinder.recursiveBind(keys))

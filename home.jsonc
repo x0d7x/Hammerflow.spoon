@@ -1,0 +1,74 @@
+{
+  "apps": {
+    "browser": "Zen Browser",
+    "ide": "Visual Studio Code",
+    "messages": "Messages",
+    "terminal": "Ghostty",
+    "email": "https://gmail.com",
+    "tasks": "Todoist",
+    "raindrop": "Raindrop.io"
+  },
+  "emails": {
+    "personal": "sam.lewis0602@gmail.com",
+    "work": "samclewis@google.com"
+  },
+  "links": [
+    {
+      "label": "youtube",
+      "trigger": "y",
+      "url": "https://youtube.com"
+    },
+    {
+      "label": "github",
+      "trigger": "g",
+      "url": "https://github.com"
+    },
+    {
+      "label": "[social]",
+      "trigger": "s",
+      "links": [
+        {
+          "label": "reddit",
+          "trigger": "r",
+          "url": "https://old.reddit.com"
+        },
+        {
+          "label": "github",
+          "trigger": "g",
+          "url": "https://github.com"
+        },
+        {
+          "label": "twitter",
+          "trigger": "t",
+          "url": "https://x.com"
+        },
+        {
+          "label": "bluesky",
+          "trigger": "b",
+          "url": "https://bsky.app"
+        },
+        {
+          "label": "[me]",
+          "trigger": "m",
+          "links": [
+            {
+              "label": "github",
+              "trigger": "g",
+              "url": "https://github.com/saml-dev"
+            },
+            {
+              "label": "twitter",
+              "trigger": "t",
+              "url": "https://x.com/saml_dev"
+            },
+            {
+              "label": "bluesky",
+              "trigger": "b",
+              "url": "https://bsky.app/profile/saml.dev"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

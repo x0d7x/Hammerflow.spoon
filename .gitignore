@@ -1,2 +1,2 @@
-home.json
-work.json
+*.toml
+!sample.toml
