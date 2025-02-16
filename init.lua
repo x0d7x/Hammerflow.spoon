@@ -39,11 +39,13 @@ configFile.auto_reload = nil
 configFile.toast_on_reload = nil
 configFile.show_ui = nil
 
+hs.window.animationDuration = 0
+
 -- aliases
 local singleKey = spoon.RecursiveBinder.singleKey
 local rect = hs.geometry.rect
 local move = function(loc)
-  return function() hs.window.focusedWindow():move(loc, nil, nil, 0) end
+  return function() hs.window.focusedWindow():move(loc) end
 end
 local open = function(link, flag)
   return function() hs.execute(string.format("open %s", link)) end
@@ -68,11 +70,15 @@ local windowLocations = {
   ["left-half"] = move(hs.layout.left50),
   ["center-half"] = move(rect(.25, 0, .5, 1)),
   ["right-half"] = move(hs.layout.right50),
-  ["left-quarter"] = move(hs.layout.left25),
-  ["right-quarter"] = move(hs.layout.right25),
+  ["first-quarter"] = move(hs.layout.left25),
+  ["second-quarter"] = move(rect(.25, 0, .25, 1)),
+  ["third-quarter"] = move(rect(.5, 0, .25, 1)),
+  ["fourth-quarter"] = move(hs.layout.right25),
   ["left-third"] = move(rect(0, 0, 1 / 3, 1)),
   ["center-third"] = move(rect(1 / 3, 0, 1 / 3, 1)),
   ["right-third"] = move(rect(2 / 3, 0, 1 / 3, 1)),
+  ["top-half"] = move(rect(0, 0, 1, .5)),
+  ["bottom-half"] = move(rect(0, .5, 1, .5)),
   ["top-left"] = move(rect(0, 0, .5, .5)),
   ["top-right"] = move(rect(.5, 0, .5, .5)),
   ["bottom-left"] = move(rect(0, .5, .5, .5)),
