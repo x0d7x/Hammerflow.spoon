@@ -83,7 +83,7 @@ local windowLocations = {
 
 local function getAction(s)
   -- todo: change to getActionAndLabel and return better default labels
-  -- e.g. for macro: we should strip prefix for default label
+  -- e.g. for text: we should strip prefix for default label
   if s:find("^http[s]?://") then
     return open(s)
   elseif s == "reload" then
@@ -92,6 +92,8 @@ local function getAction(s)
     return raycast(s)
   elseif s:sub(1, 4) == "cmd:" then
     return exe(s:sub(5))
+  elseif s:sub(1, 5) == "code:" then
+    return exe("code " .. s:sub(6))
   elseif s:sub(1, 5) == "text:" then
     return text(s:sub(6))
   elseif s:sub(1, 7) == "window:" then
