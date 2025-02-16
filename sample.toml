@@ -11,28 +11,66 @@
 
 
 # settings
-leader_key = "f18"
-auto_reload = true
-toast_on_reload = false
+leader_key = "f18"      # the leader key that starts the sequence
+auto_reload = true      # when any file in this directory is saved
+toast_on_reload =  false
+show_ui = true
 
-# set a key to an app
+# set a key to open an app
 t = "Terminal"
 
-# pass an array to change the label for the action in the popup
+# or a url
+g = "https://google.com"
+
+# use an array to change the label in the popup
 v = ["Visual Studio Code", "VS Code"]
 
-# create groups to nest actions under a
-# sequence of keypresses
+# create groups to nest actions
+# in a sequence of keypresses
 [l]
 # the "label" key is reserved to change the label of the group
 label = "[links]"
-g = "https://github.com"
-b = "https://bsky.app"
-t = "https://twitter.com"
+g = ["https://github.com", "github"]
+b = ["https://bsky.app", "bluesky"]
+t = ["https://twitter.com", "twitter"]
 
 # groups can be nested too!
 [l.m]
 label = "[me]"
-g = "https://github.com/saml-dev"
-b = "https://bsky.app/profile/saml.dev"
-t = "https://twitter.com/saml_dev"
+g = ["https://github.com/saml-dev", "my github"]
+b = ["https://bsky.app/profile/saml.dev", "my bluesky"]
+t = ["https://twitter.com/saml_dev", "my twitter"]
+
+# raycast deep links are supported toc
+[r]
+label = "[raycast]"
+c = ["raycast://extensions/raycast/raycast/confetti", "confetti"]
+e = ["raycast://extensions/raycast/emoji-symbols/search-emoji-symbols", "emoji"]
+
+# use prefixes for special actions
+[p]
+label = "[prefixes]"
+t = "text:hey there"    # types "hey there"
+z = "cmd:code ~/.zshrc" # run any command
+x = "code: ~/.zshrc"    # code: is shorthand for cmd:code
+r = "reload"            # reserved for reloading your hammerspoon config (helpful when auto_reload is false)
+
+# we have window management too!
+[w]
+label = "[window]"
+h = "window:left-half" # use presets listed in the README
+c = "window:center-half" # use presets listed in the README
+l = ["window:.4,.3,.2,.4","small center"] # or use 4 percentages for x,y,width,height for custom placement - more details in README
+
+# this group is handy to copy over
+# to your main config for easy tweaking
+[h]
+label = "[hammerspoon]"
+d = ["https://www.hammerspoon.org/docs/index.html", "docs"]
+c = "cmd:code ~/.hammerspoon"
+r = "reload"
+
+# glhf :) share your cool ideas with me on
+# twitter @saml_dev - <leader> l m t
+# bluesky @saml.dev - <leader> l m b
+# github saml-dev   - <leader> l m g
