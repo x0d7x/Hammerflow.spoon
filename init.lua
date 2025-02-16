@@ -2,7 +2,6 @@ hs.loadSpoon("RecursiveBinder")
 hs.loadSpoon("ReloadConfiguration")
 local toml = require("./tinytoml")
 
-
 -- Allows different configs for different computers.
 -- Reads the first config found and falls back to sample.toml
 -- so shortcuts work right after git clone for new users.
@@ -24,17 +23,21 @@ if not configFile.leader_key then
   hs.alert("Missing leader_key in toml, defaulting to f18")
 end
 local leader_key = configFile.leader_key or "f18"
-if configFile.auto_reload then
+if configFile.auto_reload == true then
   spoon.ReloadConfiguration:start()
 end
-if configFile.toast_on_reload then
+if configFile.toast_on_reload == true then
   hs.alert('Reloaded config')
+end
+if configFile.show_ui == false then
+  spoon.RecursiveBinder.showBindHelper = false
 end
 -- clear settings from table so we don't have to account
 -- for them in the recursive processing function
 configFile.leader_key = nil
 configFile.auto_reload = nil
 configFile.toast_on_reload = nil
+configFile.show_ui = nil
 
 -- aliases
 local singleKey = spoon.RecursiveBinder.singleKey
