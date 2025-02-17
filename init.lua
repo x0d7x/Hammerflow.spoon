@@ -47,7 +47,7 @@ local rect = hs.geometry.rect
 local move = function(loc)
   return function() hs.window.focusedWindow():move(loc) end
 end
-local open = function(link, flag)
+local open = function(link)
   return function() hs.execute(string.format("open %s", link)) end
 end
 local raycast = function(link)
@@ -96,7 +96,10 @@ local function getAction(s)
   if s:find("^http[s]?://") then
     return open(s)
   elseif s == "reload" then
-    return function() hs.reload() end
+    return function()
+      hs.reload()
+      hs.console.clearConsole()
+    end
   elseif s:find("^raycast://") then
     return raycast(s)
   elseif s:sub(1, 3) == "hs:" then
