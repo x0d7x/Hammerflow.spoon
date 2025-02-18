@@ -25,10 +25,8 @@ g = "https://google.com"
 v = ["Visual Studio Code", "VS Code"]
 
 # create groups to nest actions
-# in a sequence of keypresses
 [l]
-# the "label" key is reserved to change the label of the group
-label = "[links]"
+label = "[links]" # the "label" key is reserved to change the label of the group
 g = "https://github.com"
 b = "https://bsky.app"
 t = "https://twitter.com"
