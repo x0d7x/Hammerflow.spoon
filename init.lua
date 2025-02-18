@@ -93,30 +93,28 @@ local windowLocations = {
   ["fullscreen"] = function() hs.window.focusedWindow():toggleFullScreen() end
 }
 
-local function getAction(s)
-  -- todo: change to getActionAndLabel and return better default labels
-  -- e.g. for text: we should strip prefix for default label
+local function getActionAndLabel(s)
   if s:find("^http[s]?://") then
-    return open(s)
+    return open(s), s:sub(5, 5) == "s" and s:sub(9) or s:sub(8)
   elseif s == "reload" then
     return function()
       hs.reload()
       hs.console.clearConsole()
-    end
+    end, s
   elseif s:find("^raycast://") then
-    return raycast(s)
+    return raycast(s), s
   elseif s:sub(1, 3) == "hs:" then
-    return hs_run(s:sub(4))
+    return hs_run(s:sub(4)), s
   elseif s:sub(1, 4) == "cmd:" then
-    return exe(s:sub(5))
+    return exe(s:sub(5)), s:sub(5)
   elseif s:sub(1, 5) == "code:" then
-    return exe("code " .. s:sub(6))
+    return exe("code " .. s:sub(6)), "code " .. s:sub(6)
   elseif s:sub(1, 5) == "text:" then
-    return text(s:sub(6))
+    return text(s:sub(6)), s:sub(6)
   elseif s:sub(1, 7) == "window:" then
     local loc = s:sub(8)
     if windowLocations[loc] then
-      return windowLocations[loc]
+      return windowLocations[loc], s
     else
       -- e.g. window:0,0,.5,1 for left half of screen
       local x, y, w, h = loc:match("^([%.%d]+),%s*([%.%d]+),%s*([%.%d]+),%s*([%.%d]+)$")
@@ -124,11 +122,11 @@ local function getAction(s)
         hs.alert('Invalid window location: "' .. loc .. '"', nil, nil, 5)
         return
       end
-      return move(rect(tonumber(x), tonumber(y), tonumber(w), tonumber(h)))
+      return move(rect(tonumber(x), tonumber(y), tonumber(w), tonumber(h))), s
     end
     return
   else
-    return launch(s)
+    return launch(s), s
   end
 end
 
@@ -138,9 +136,11 @@ local function parseKeyMap(config)
     if k == "label" then
       -- continue
     elseif type(v) == "string" then
-      keyMap[singleKey(k, v)] = getAction(v)
+      local action, label = getActionAndLabel(v)
+      keyMap[singleKey(k, label)] = action
     elseif type(v) == "table" and v[1] then
-      keyMap[singleKey(k, v[2])] = getAction(v[1])
+      local action, _ = getActionAndLabel(v[1])
+      keyMap[singleKey(k, v[2])] = action
     else
       keyMap[singleKey(k, v.label or k)] = parseKeyMap(v)
     end
