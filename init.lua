@@ -8,22 +8,25 @@ local toml = require("./tinytoml")
 local configs = { "home.toml", "work.toml", "sample.toml" }
 
 local configFile = nil
+local configFileName = ""
 for _, config in ipairs(configs) do
   if pcall(function() toml.parse(config) end) then
     configFile = toml.parse(config)
+    configFileName = config
     break
   end
 end
 if not configFile then
-  hs.alert("No toml config found! Searched for: " .. table.concat(configs, ', '))
+  hs.alert("No toml config found! Searched for: " .. table.concat(configs, ', '), 5)
   spoon.ReloadConfiguration:start()
   return
 end
 if not configFile.leader_key then
-  hs.alert("Missing leader_key in toml, defaulting to f18")
+  hs.alert("You must set leader_key at the top of " .. configFileName .. ". Exiting.", 5)
+  return
 end
 local leader_key = configFile.leader_key or "f18"
-if configFile.auto_reload == true then
+if not configFile.auto_reload or configFile.auto_reload == true then
   spoon.ReloadConfiguration:start()
 end
 if configFile.toast_on_reload == true then
