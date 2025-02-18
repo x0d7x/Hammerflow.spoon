@@ -1,6 +1,6 @@
 hs.loadSpoon("RecursiveBinder")
 hs.loadSpoon("ReloadConfiguration")
-local toml = require("./tinytoml")
+local toml = require("lib/tinytoml")
 
 -- Allows different configs for different computers.
 -- Reads the first config found and falls back to sample.toml
