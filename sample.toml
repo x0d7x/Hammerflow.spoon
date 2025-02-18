@@ -29,9 +29,9 @@ v = ["Visual Studio Code", "VS Code"]
 [l]
 # the "label" key is reserved to change the label of the group
 label = "[links]"
-g = ["https://github.com", "github"]
-b = ["https://bsky.app", "bluesky"]
-t = ["https://twitter.com", "twitter"]
+g = "https://github.com"
+b = "https://bsky.app"
+t = "https://twitter.com"
 
 # groups can be nested too!
 [l.m]
@@ -49,7 +49,7 @@ e = ["raycast://extensions/raycast/emoji-symbols/search-emoji-symbols", "emoji"]
 # use prefixes for special actions
 [p]
 label = "[prefixes]"
-t = "text:hey there"    # types "hey there"
+t = "text:sam@saml.dev" # types "sam@saml.dev"
 z = "cmd:code ~/.zshrc" # run any terminal command
 x = "code: ~/.zshrc"    # code: is shorthand for cmd:code
 r = "reload"            # reserved for reloading your hammerspoon config (helpful when auto_reload is false)
