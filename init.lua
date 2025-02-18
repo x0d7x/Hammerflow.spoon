@@ -26,6 +26,7 @@ if not configFile.leader_key then
   return
 end
 local leader_key = configFile.leader_key or "f18"
+local leader_key_mods = configFile.leader_key_mods or ""
 if not configFile.auto_reload or configFile.auto_reload == true then
   spoon.ReloadConfiguration:start()
 end
@@ -38,6 +39,7 @@ end
 -- clear settings from table so we don't have to account
 -- for them in the recursive processing function
 configFile.leader_key = nil
+configFile.leader_key_mods = nil
 configFile.auto_reload = nil
 configFile.toast_on_reload = nil
 configFile.show_ui = nil
@@ -149,4 +151,4 @@ local function parseKeyMap(config)
 end
 
 local keys = parseKeyMap(configFile)
-hs.hotkey.bind('', leader_key, spoon.RecursiveBinder.recursiveBind(keys))
+hs.hotkey.bind(leader_key_mods, leader_key, spoon.RecursiveBinder.recursiveBind(keys))

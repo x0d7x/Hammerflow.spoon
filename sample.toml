@@ -9,6 +9,7 @@
 
 # settings
 leader_key = "f18"        # required, the leader key that starts the sequence
+leader_key_mods = ""      # optional, not recommended, the modifiers for the leader key
 auto_reload = true        # optional, default true, reload when any file in this directory is saved
 toast_on_reload =  false  # optional, default false, show a toast when the config is reloaded
 show_ui = true            # optional, default true, show the ui with your key maps
