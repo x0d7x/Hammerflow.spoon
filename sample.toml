@@ -3,10 +3,8 @@
 # can do with this leader key setup. The 
 # lua prioritizes home.toml, then work.toml,
 # then falls back to this sample.toml. If you
-# want different profile names, you can edit
-# the config-reading code at the top of init.lua.
-# You don't need to know lua to change it, just
-# follow the pattern.
+# want different profile names, you can add it
+# to the list on line 8 of init.lua. 
 #################################################
 
 # settings
@@ -50,7 +48,7 @@ e = ["raycast://extensions/raycast/emoji-symbols/search-emoji-symbols", "emoji"]
 [p]
 label = "[prefixes]"
 t = "text:hey there"    # types "hey there"
-z = "cmd:code ~/.zshrc" # run any command
+z = "cmd:code ~/.zshrc" # run any terminal command
 x = "code: ~/.zshrc"    # code: is shorthand for cmd:code
 r = "reload"            # reserved for reloading your hammerspoon config (helpful when auto_reload is false)
 
@@ -62,18 +60,18 @@ c = "window:center-half" # use presets listed in the README
 l = ["window:.4,.3,.2,.4","small center"] # or use 4 percentages for x,y,width,height for custom placement - more details in README
 
 # or use raycast for window management if you prefer
-# [w]
-# label = "[window]"
-# h = ["raycast://extensions/raycast/window-management/left-half", "left half"]
-# l = ["raycast://extensions/raycast/window-management/right-half", "right half"]
-# c = ["raycast://extensions/raycast/window-management/center-half", "center half"]
+[w.r]
+label = "[raycast-window]"
+h = ["raycast://extensions/raycast/window-management/left-half", "left half"]
+l = ["raycast://extensions/raycast/window-management/right-half", "right half"]
+c = ["raycast://extensions/raycast/window-management/center-half", "center half"]
 
 # this group is handy to copy over
 # to your main config for easy experimenting
 [h]
 label = "[hammerspoon]"
 d = ["https://www.hammerspoon.org/docs/index.html", "docs"]
-c = "cmd:code ~/.hammerspoon"
+c = "code: ~/.hammerspoon"
 r = "reload" # reserved for reloading your hammerspoon config (helpful when auto_reload is false)
 
 # glhf :) share your cool ideas with me on
