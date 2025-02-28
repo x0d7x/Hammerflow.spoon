@@ -1,6 +1,20 @@
 hs.loadSpoon("RecursiveBinder")
 hs.loadSpoon("ReloadConfiguration")
-local toml = require("lib/tinytoml")
+local function full_path(rel_path)
+  local current_file = debug.getinfo(2, "S").source:sub(2) -- Get the current file's path
+  local current_dir = current_file:match("(.*/)") or "."   -- Extract the directory
+  return current_dir .. rel_path
+end
+local function require_relative(path)
+  local full_path = full_path(path)
+  local f, err = loadfile(full_path)
+  if f then
+    return f()
+  else
+    error("Failed to require relative file: " .. full_path .. " - " .. err)
+  end
+end
+local toml = require_relative("lib/tinytoml.lua")
 
 -- Allows different configs for different computers.
 -- Reads the first config found and falls back to sample.toml
@@ -10,8 +24,9 @@ local configs = { "home.toml", "work.toml", "sample.toml" }
 local configFile = nil
 local configFileName = ""
 for _, config in ipairs(configs) do
-  if pcall(function() toml.parse(config) end) then
-    configFile = toml.parse(config)
+  local fPath = full_path(config)
+  if pcall(function() toml.parse(fPath) end) then
+    configFile = toml.parse(fPath)
     configFileName = config
     break
   end
@@ -32,7 +47,7 @@ if configFile.auto_reload == nil or configFile.auto_reload then
   spoon.ReloadConfiguration:start()
 end
 if configFile.toast_on_reload == true then
-  hs.alert('Reloaded config')
+  hs.alert('🔁 Reloaded config')
 end
 if configFile.show_ui == false then
   spoon.RecursiveBinder.showBindHelper = false
@@ -80,7 +95,7 @@ end
 local cmd = function(cmd)
   return function() os.execute(cmd .. " &") end
 end
-local code = function(arg) return cmd("/usr/local/bin/code " .. arg) end
+local code = function(arg) return cmd("open -a 'Visual Studio Code' " .. arg) end
 local launch = function(app)
   return function() hs.application.launchOrFocus(app) end
 end

@@ -5,7 +5,7 @@
 # lua prioritizes home.toml, then work.toml,
 # then falls back to this sample.toml. If you
 # want different profile names, you can add it
-# to the list on line 8 of init.lua. 
+# to the list on line 22 of init.lua. 
 #################################################
 
 # settings
@@ -15,6 +15,7 @@ leader_key_mods = ""      # optional, default "", not recommended - a dedicated 
 auto_reload = true        # optional, default true, reload when any file in this directory is saved
 toast_on_reload =  false  # optional, default false, show a toast when the config is reloaded
 show_ui = true            # optional, default true, show the ui with your key maps
+
 
 # set a key to open an app
 t = "Terminal"
@@ -54,11 +55,11 @@ e = ["raycast://extensions/raycast/emoji-symbols/search-emoji-symbols", "emoji"]
 # use prefixes for special actions
 [p]
 label = "[prefixes]"
-t = "text:sam@saml.dev" # types "sam@saml.dev"
-z = "cmd:code ~/.zshrc" # run any terminal command
-x = "code: ~/.zshrc"    # code: is shorthand for cmd:code
-a = "shortcut:cmd a"    # trigger a keyboard shortcut
-r = "reload"            # reserved for reloading your hammerspoon config (helpful when auto_reload is false)
+t = "text:sam@saml.dev"       # types "sam@saml.dev"
+z = "cmd:code ~/.zshrc"       # run any terminal command
+x = "code: ~/.zshrc"          # code: is shorthand for cmd:code
+s = "shortcut:cmd shift 4"    # trigger a keyboard shortcut
+r = "reload"                  # reserved for reloading your hammerspoon config (helpful when auto_reload is false)
 
 
 # we have window management too!
@@ -66,7 +67,7 @@ r = "reload"            # reserved for reloading your hammerspoon config (helpfu
 label = "[window]"
 h = "window:left-half"                    # use presets listed in the README
 c = "window:center-half"                  # use presets listed in the README
-l = ["window:.4,.3,.2,.4","small center"] # or use 4 percentages for x,y,width,height for custom placement - more details in README
+s = ["window:.4,.3,.2,.4","small center"] # or use 4 percentages for x,y,width,height for custom placement - more details in README
 
 
 # or use raycast for window management if you prefer
@@ -81,7 +82,6 @@ c = ["raycast://extensions/raycast/window-management/center-half", "center half"
 # for quick access to your config
 [h]
 label = "[hammerspoon]"
-d = ["https://www.hammerspoon.org/docs/index.html", "docs"]
 c = "code: ~/.hammerspoon"
 r = "reload" # reserved for reloading your hammerspoon config (helpful when auto_reload is false)
 
