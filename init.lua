@@ -78,7 +78,7 @@ local move = function(loc)
   return function() hs.window.focusedWindow():move(loc) end
 end
 local open = function(link)
-  return function() os.execute(string.format("open %s", link)) end
+  return function() os.execute(string.format("open \"%s\"", link)) end
 end
 local raycast = function(link)
   -- raycast needs -g to keep current app as "active" for
@@ -152,6 +152,23 @@ local function getActionAndLabel(s)
   elseif startswith(s, "cmd:") then
     local arg = postfix(s)
     return cmd(arg), arg
+  elseif startswith(s, "input:") then
+    local remaining = postfix(s)
+    local _, label = getActionAndLabel(remaining)
+    return function()
+      -- user input takes focus and doesn't return it
+      local focusedWindow = hs.window.focusedWindow()
+      local button, userInput = hs.dialog.textPrompt("", "", "", "Submit", "Cancel")
+      -- restore focus
+      focusedWindow:focus()
+
+      if button == "Cancel" then return end
+
+      -- replace text and execute remaining action
+      local replaced = string.gsub(remaining, "{input}", userInput)
+      local action, _ = getActionAndLabel(replaced)
+      action()
+    end, label
   elseif startswith(s, "shortcut:") then
     local arg = postfix(s)
     return keystroke(arg), arg
