@@ -60,7 +60,7 @@ z = "cmd:code ~/.zshrc"       # run any terminal command
 x = "code: ~/.zshrc"          # open a file or directory in VS Code
 s = "shortcut:cmd shift 4"    # trigger a keyboard shortcut
 r = "reload"                  # reserved for reloading your hammerspoon config (helpful when auto_reload is false)
-i = "input:https://google.com/search/{input}" # capture input and insert it into any other action
+i = "input:https://google.com/search?q={input}" # capture input and insert it into any other action
 
 
 # we have window management too!
