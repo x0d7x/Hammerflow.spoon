@@ -47,7 +47,19 @@ end
 local singleKey = spoon.RecursiveBinder.singleKey
 local rect = hs.geometry.rect
 local move = function(loc)
-  return function() hs.window.focusedWindow():move(loc) end
+  return function()
+    local w = hs.window.focusedWindow()
+    w:move(loc)
+    -- for some reason Firefox, and therefore Zen Browser, both
+    -- animate when no other apps do, and only change size *or*
+    -- position when moved, so it has to be issued twice. 0.2 is
+    -- the shortest delay that works consistently.
+    if hs.application.frontmostApplication():bundleID() == "app.zen-browser.zen" or
+        hs.application.frontmostApplication():bundleID() == "org.mozilla.firefox" then
+      os.execute("sleep 0.2")
+      w:move(loc)
+    end
+  end
 end
 local open = function(link)
   return function() os.execute(string.format("open \"%s\"", link)) end
