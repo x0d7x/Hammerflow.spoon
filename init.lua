@@ -43,6 +43,16 @@ local function parseKeystroke(keystroke)
   return parts, key
 end
 
+local function file_exists(name)
+  local f = io.open(name, "r")
+  if f ~= nil then
+    io.close(f)
+    return true
+  else
+    return false
+  end
+end
+
 -- Action Helpers
 local singleKey = spoon.RecursiveBinder.singleKey
 local rect = hs.geometry.rect
@@ -187,10 +197,14 @@ function obj.loadFirstValidTomlFile(paths)
     if not startswith(path, "/") then
       path = hs.configdir .. "/" .. path
     end
-    if pcall(function() toml.parse(path) end) then
-      configFile = toml.parse(path)
-      configFileName = path
-      break
+    if file_exists(path) then
+      if pcall(function() toml.parse(path) end) then
+        configFile = toml.parse(path)
+        configFileName = path
+        break
+      else
+        hs.alert("Parse error for " .. path .. " - check for duplicate keys like s= and [s]", 5)
+      end
     end
   end
   if not configFile then
