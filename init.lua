@@ -193,10 +193,12 @@ function obj.loadFirstValidTomlFile(paths)
   -- parse TOML file
   local configFile = nil
   local configFileName = ""
+  local searchedPaths = {}
   for _, path in ipairs(paths) do
     if not startswith(path, "/") then
       path = hs.configdir .. "/" .. path
     end
+    table.insert(searchedPaths, path)
     if file_exists(path) then
       if pcall(function() toml.parse(path) end) then
         configFile = toml.parse(path)
@@ -208,7 +210,7 @@ function obj.loadFirstValidTomlFile(paths)
     end
   end
   if not configFile then
-    hs.alert("No toml config found! Searched for: " .. table.concat(paths, ', '), 5)
+    hs.alert("No toml config found! Searched for: " .. table.concat(searchedPaths, ', '), 5)
     obj.hotReload = true
     return
   end
