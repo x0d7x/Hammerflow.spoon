@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-global
+
 local obj = {}
 obj.__index = obj
 
@@ -10,6 +12,7 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 
 -- State
 obj.hotReload = false
+obj._userFunctions = {}
 
 -- lets us package RecursiveBinder with Hammerflow to include
 -- sorting and a bug fix that hasn't been merged upstream yet
@@ -96,6 +99,15 @@ end
 local hs_run = function(lua)
   return function() load(lua)() end
 end
+local userFunc = function(funcKey)
+  return function()
+    if obj._userFunctions[funcKey] then
+      obj._userFunctions[funcKey]()
+    else
+      hs.alert("Unknown function " .. funcKey, 5)
+    end
+  end
+end
 
 -- window management presets
 local windowLocations = {
@@ -164,6 +176,9 @@ local function getActionAndLabel(s)
   elseif startswith(s, "shortcut:") then
     local arg = postfix(s)
     return keystroke(arg), arg
+  elseif startswith(s, "function:") then
+    local funcKey = postfix(s)
+    return userFunc(funcKey), funcKey .. "()"
   elseif startswith(s, "code:") then
     local arg = postfix(s)
     return code(arg), "code " .. arg
@@ -260,6 +275,14 @@ function obj.loadFirstValidTomlFile(paths)
 
   local keys = parseKeyMap(configFile)
   hs.hotkey.bind(leader_key_mods, leader_key, spoon.RecursiveBinder.recursiveBind(keys))
+end
+
+obj.registerFunctions = function(...)
+  for _, funcs in pairs({ ... }) do
+    for k, v in pairs(funcs) do
+      obj["_userFunctions"][k] = v
+    end
+  end
 end
 
 return obj

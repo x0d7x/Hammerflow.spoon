@@ -15,6 +15,19 @@ spoon.Hammerflow.loadFirstValidTomlFile({
     "work.toml",
     "Spoons/Hammerflow.spoon/sample.toml"
 })
+
+-- optionally register custom functions.
+-- registerFunctions takes 1 or more tables.
+-- each table contains functions that can be 
+-- called from your toml config using the
+-- function: prefix, e.g.
+--   h = "function:hi"
+local fileFuncs = require("files.lua")
+spoon.Hammerflow.registerFunctions(
+    fileFuncs, 
+    { ["hi"] = function() hs.alert("hi") end }
+)
+
 -- optionally respect auto_reload setting in the toml config.
 if spoon.Hammerflow.auto_reload then
     hs.loadSpoon("ReloadConfiguration")
