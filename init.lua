@@ -11,7 +11,7 @@ obj.homepage = "https://github.com/saml-dev/hammerflow"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
 
 -- State
-obj.hotReload = false
+obj.auto_reload = false
 obj._userFunctions = {}
 
 -- lets us package RecursiveBinder with Hammerflow to include
@@ -226,7 +226,7 @@ function obj.loadFirstValidTomlFile(paths)
   end
   if not configFile then
     hs.alert("No toml config found! Searched for: " .. table.concat(searchedPaths, ', '), 5)
-    obj.hotReload = true
+    obj.auto_reload = true
     return
   end
   if configFile.leader_key == nil or configFile.leader_key == "" then
@@ -238,7 +238,7 @@ function obj.loadFirstValidTomlFile(paths)
   local leader_key = configFile.leader_key or "f18"
   local leader_key_mods = configFile.leader_key_mods or ""
   if configFile.auto_reload == nil or configFile.auto_reload then
-    obj.hotReload = true
+    obj.auto_reload = true
   end
   if configFile.toast_on_reload == true then
     hs.alert('🔁 Reloaded config')
