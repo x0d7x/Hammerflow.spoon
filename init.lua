@@ -264,8 +264,8 @@ function obj.loadFirstValidTomlFile(paths)
         local action, label = getActionAndLabel(v)
         keyMap[singleKey(k, label)] = action
       elseif type(v) == "table" and v[1] then
-        local action, _ = getActionAndLabel(v[1])
-        keyMap[singleKey(k, v[2])] = action
+        local action, defaultLabel = getActionAndLabel(v[1])
+        keyMap[singleKey(k, v[2] or defaultLabel)] = action
       else
         keyMap[singleKey(k, v.label or k)] = parseKeyMap(v)
       end
