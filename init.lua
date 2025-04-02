@@ -230,7 +230,7 @@ function obj.loadFirstValidTomlFile(paths)
         configFileName = path
         break
       else
-        hs.alert("Parse error for " .. path .. " - check for duplicate keys like s= and [s]", 5)
+        hs.notify.show("Hammerflow", "Parse error", path .. "\nCheck for duplicate keys like s and [s]")
       end
     end
   end
@@ -336,7 +336,6 @@ function obj.loadFirstValidTomlFile(paths)
         obj._userFunctions[k] = isApp(v)
       end
     end
-
 
     return keyMap
   end
