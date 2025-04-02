@@ -13,6 +13,7 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 -- State
 obj.auto_reload = false
 obj._userFunctions = {}
+obj._apps = {}
 
 -- lets us package RecursiveBinder with Hammerflow to include
 -- sorting and a bug fix that hasn't been merged upstream yet
@@ -106,6 +107,15 @@ local userFunc = function(funcKey)
     else
       hs.alert("Unknown function " .. funcKey, 5)
     end
+  end
+end
+local function isApp(app)
+  return function()
+    local frontApp = hs.application.frontmostApplication()
+    local title = frontApp:title():lower()
+    local bundleID = frontApp:bundleID():lower()
+    app = app:lower()
+    return title == app or bundleID == app
   end
 end
 
@@ -257,9 +267,27 @@ function obj.loadFirstValidTomlFile(paths)
 
   local function parseKeyMap(config)
     local keyMap = {}
+    local conditionalActions = nil
     for k, v in pairs(config) do
       if k == "label" then
         -- continue
+      elseif k == "apps" then
+        for shortName, app in pairs(v) do
+          obj._apps[shortName] = app
+        end
+      elseif string.find(k, "_") then
+        local key = k:sub(1, 1)
+        local cond = k:sub(3)
+        if conditionalActions == nil then conditionalActions = {} end
+        local actionString = v
+        if type(v) == "table" then
+          actionString = v[1]
+        end
+        if conditionalActions[key] then
+          conditionalActions[key][cond] = getActionAndLabel(actionString)
+        else
+          conditionalActions[key] = { [cond] = getActionAndLabel(actionString) }
+        end
       elseif type(v) == "string" then
         local action, label = getActionAndLabel(v)
         keyMap[singleKey(k, label)] = action
@@ -270,6 +298,46 @@ function obj.loadFirstValidTomlFile(paths)
         keyMap[singleKey(k, v.label or k)] = parseKeyMap(v)
       end
     end
+
+    -- parse labels and default action for conditional actions
+    local conditionalLabels = {}
+    if conditionalActions ~= nil then
+      -- get the default action if it exists
+      for key_, value_ in pairs(keyMap) do
+        if conditionalActions[key_[2]] then
+          conditionalActions[key_[2]]["_"] = value_
+          keyMap[key_] = nil
+          conditionalLabels[key_[2]] = key_[3]
+        end
+      end
+      -- add conditionalActions to keyMap
+      for key_, value_ in pairs(conditionalActions) do
+        keyMap[singleKey(key_, conditionalLabels[key_] or "conditional")] = function()
+          local fallback = true
+          for cond, fn in pairs(value_) do
+            if (obj._userFunctions[cond] and obj._userFunctions[cond]())
+                or (obj._userFunctions[cond] == nil and isApp(cond)())
+            then
+              fn()
+              fallback = false
+              break
+            end
+          end
+          if fallback and value_["_"] then
+            value_["_"]()
+          end
+        end
+      end
+    end
+
+    -- add apps to userFunctions if there isn't a function with the same name
+    for k, v in pairs(obj._apps) do
+      if obj._userFunctions[k] == nil then
+        obj._userFunctions[k] = isApp(v)
+      end
+    end
+
+
     return keyMap
   end
 
@@ -277,10 +345,10 @@ function obj.loadFirstValidTomlFile(paths)
   hs.hotkey.bind(leader_key_mods, leader_key, spoon.RecursiveBinder.recursiveBind(keys))
 end
 
-obj.registerFunctions = function(...)
+function obj.registerFunctions(...)
   for _, funcs in pairs({ ... }) do
     for k, v in pairs(funcs) do
-      obj["_userFunctions"][k] = v
+      obj._userFunctions[k] = v
     end
   end
 end
