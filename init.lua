@@ -274,6 +274,8 @@ function obj.loadFirstValidTomlFile(paths)
     spoon.RecursiveBinder.showBindHelper = false
   end
 
+  spoon.RecursiveBinder.helperFormat = hs.alert.defaultStyle
+
   -- clear settings from table so we don't have to account
   -- for them in the recursive processing function
   configFile.leader_key = nil
