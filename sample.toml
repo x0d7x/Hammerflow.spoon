@@ -9,7 +9,7 @@
 #################################################
 
 # settings
-leader_key = "f18"        # required, the leader key that starts the sequence
+leader_key = "f12"        # required, the leader key that starts the sequence
 leader_key_mods = ""      # optional, default "", not recommended - a dedicated leader key is better
                              # supports cmd ctrl alt shift
 auto_reload = true        # optional, default true, reload when any file in this directory is saved
